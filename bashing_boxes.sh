@@ -1,10 +1,10 @@
-Objects=("PopCorn" "Apple" "Banana" "Flower" )
+Objects=("Staircase" "Sail Boat" "Microscope"  "Marshmallows" "Lemonade" "Cauliflower" "Honey" "Walkman" "Milkshake" "Orange tree" )
 
 
 addItem()
 {
-	read -p "Name of Item You want to add: " itemAdded
-	Objects+=($itemAdded)
+	read -p "Name of Item You want to add:" itemAdded
+	Objects+=("$itemAdded")
 	echo New Item Added
 }
 printIndex()
@@ -15,14 +15,20 @@ printIndex()
 	 read -p "What Index Do you want to Print read: " index
 
 
-	
-		if (($index>=${#Objects[@]} || $index < 0 )); then
-			
-			 echo Please Enter a Valid Index Number Within the Array
-		else
-		echo ${Objects[$index]}
-		break
-	fi
+	    if [[ $index =~ [0-9]+$ ]]; then
+	    		if (($index>=${#Objects[@]} || $index < 0 )); then
+	    			
+	    			 echo Please Enter a Valid Index Number Within the Array
+	    		else
+	    		echo ${Objects[$index]}
+	    		break
+	    	fi
+	    else
+	    	{
+	    		echo Input a Valid Input
+	    	}
+	    fi
+		
 
 
 	done		
@@ -31,21 +37,30 @@ removeItem()
 {
 	while true; do
 		read -p "What Item do you want to remove (Type Index):" index
-	if (($index>=${#Objects[@]} || $index < 0 )); then
-		
-		 echo Please Enter a Valid Index Number Within the Array
-	else
-	 echo  "${Objects[$index]} deleted"
-	  unset 'Objects[$index]'
-	  Objects=("${Objects[@]}")
-	 
+
+		if [[ $index =~ [0-9]+$ ]]; then
+				if (($index>=${#Objects[@]} || $index < 0 )); then
+					
+					 echo Please Enter a Valid Index Number Within the Array
+				else
+				 echo  "${Objects[$index]} deleted"
+				  unset 'Objects[$index]'
+				  Objects=("${Objects[@]}")
+				 
+				
+				 echo "Showing List
+			     =====================
+				 "
+				 echo "${Objects[@]}"
+				 break
+				fi
+			else 
+				{
+					echo Enter a Valid Index
+				}
+			fi
+
 	
-	 echo "Showing List
-     =====================
-	 "
-	 echo "${Objects[@]}"
-	 break
-	fi
 done
 }
 printList()
@@ -82,7 +97,9 @@ printMenu(){
 
 while true; do
 	printMenu
-	 case $option in 
+
+	if [[ $option =~ [0-9]+$ ]]; then
+		case $option in 
 	 1) 
 	 	printList 
 	 	;;
@@ -99,4 +116,11 @@ while true; do
 
 	    *) echo "Please Enter a Valid Number";;
 	 esac
+	else
+		{
+			echo Input a Valid Index
+		}
+	fi
+
+	 
 done
