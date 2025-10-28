@@ -1,6 +1,10 @@
 Objects=("Staircase" "Sail Boat" "Microscope"  "Marshmallows" "Lemonade" "Cauliflower" "Honey" "Walkman" "Milkshake" "Orange tree" )
 
-
+quit()
+ {
+   echo Bye
+   
+ }
 addItem()
 {
 	read -p "Name of Item You want to add:" itemAdded
@@ -94,6 +98,10 @@ printMenu(){
 	read -p "Choice:" option
 	
 }
+save_array()
+{
+    printf  "%s\n" "${Objects[@]}" > what.txt
+}
 
 while true; do
 	printMenu
@@ -111,7 +119,10 @@ while true; do
 	 	;;
 	 5) removeItem
 	 	;;
-	 6) break 
+	 6) save_array
+	    ;;
+	 7) quit
+	    break
 	 	;;
 
 	    *) echo "Please Enter a Valid Number";;
