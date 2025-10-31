@@ -1,16 +1,8 @@
 Objects=("Staircase" "Sail Boat" "Microscope"  "Marshmallows" "Lemonade" "Cauliflower" "Honey" "Walkman" "Milkshake" "Orange tree" )
+clear
+datafolder="/home/bignasx/Bashing_Boxes/data" 
 
-quit()
- {
-   echo Bye
-   
- }
-addItem()
-{
-	read -p "Name of Item You want to add:" itemAdded
-	Objects+=("$itemAdded")
-	echo New Item Added
-}
+
 printIndex()
 {
 	
@@ -80,6 +72,12 @@ removeLast()
 	Objects=("${Objects[@]}")
 
 }
+addItem()
+{
+	read -p "Name of Item You want to add:" itemAdded
+	Objects+=("$itemAdded")
+	echo New Item Added
+}
 
 
 printMenu(){
@@ -93,16 +91,100 @@ printMenu(){
 	3) Add item
 	4) Remove last item	
 	5) Remove item at Index
-	6) Quit
+	6) Save Current Array
+	7) Load an array
+	8) List saved arrays'
+	9) delete an array
+	10) quit
 	"
 	read -p "Choice:" option
 	
 }
+
+
 save_array()
 {
-    printf  "%s\n" "${Objects[@]}" > what.txt
+	
+	read -p "Name of File: "  name
+    file="$datafolder/$name.txt"
+    printf "%s\n" "${Objects[@]}" > "$file"
+	echo $name created
+	ls "$datafolder" 
+}
+list_saved_arrays()
+{
+	ls "$datafolder"
 }
 
+quit()
+ {
+	while true; do
+	 read -p "Would you like to save before leaving (y/n)" input
+	 if [[ $input == "y" || $input == "yes" ]]; then
+	   	save_array
+	   	exit 0
+	 elif [[ $input == "n" || $input == "no" ]]; then
+	
+	 	exit 0
+	 else
+	  echo "Input only accepts yes/no/y/n"
+	 fi
+	done
+
+
+   echo Bye
+   
+ }
+
+delete_array()
+{
+	while true; do
+	  if [[ $input == "exit" ]]; then
+	  break
+	 fi
+		read -p "Which file do you want to delete" $input
+		if [ -f "$datafolder/$input.txt" ]; then
+			rm -r $datafolder/$input.txt
+			echo $input.txt deleted
+		else
+		 echo "file doesnt exist(type exit to leave)"
+		fi
+	done
+
+
+}
+load_a_saved_array()
+{
+  while true; do
+   read -p "What is the name of the File
+   (type exit  to leave) : " name_of_array
+
+    if [[ $name_of_array == "exit" ]]; then
+	 break
+	fi
+
+	if [ -f "/home/bignasx/Bashing_Boxes/data/$name_of_array.txt" ]; then
+		mapfile -t loaded_array < "/home/bignasx/Bashing_Boxes/data/$name_of_array.txt"
+	 Objects=("${loaded_array[@]}")
+
+	 for item in "${!Objects[@]}";  do
+ 		echo "$item) ${Objects[$item]}"
+		
+	 
+	 done
+	 break
+	 
+	else
+	 echo That file $name_of_array doesnt exist
+	fi
+
+	
+	  
+ done
+   
+	
+	
+}
 while true; do
 	printMenu
 
@@ -121,7 +203,14 @@ while true; do
 	 	;;
 	 6) save_array
 	    ;;
-	 7) quit
+	 7) load_a_saved_array
+	    ;;
+	 8) list_saved_arrays
+	 	;;
+	 9) delete_array
+	    ;;
+	    
+	 10) quit
 	    break
 	 	;;
 
@@ -131,7 +220,5 @@ while true; do
 		{
 			echo Input a Valid Index
 		}
-	fi
-
-	 
+	fi	 
 done
