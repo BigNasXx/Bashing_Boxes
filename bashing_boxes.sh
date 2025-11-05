@@ -1,224 +1,234 @@
-Objects=("Staircase" "Sail Boat" "Microscope"  "Marshmallows" "Lemonade" "Cauliflower" "Honey" "Walkman" "Milkshake" "Orange tree" )
+#!/bin/bash
 clear
+Objects=("Staircase" "Sail Boat" "Microscope"  "Marshmallows" "Lemonade" "Cauliflower" "Honey" "Walkman" "Milkshake" "Orange tree")
+
 datafolder="/home/bignasx/Bashing_Boxes/data" 
 
-
-printIndex()
+# prints the menu
+print_menu()
 {
-	
-	while true; do
-
-	 read -p "What Index Do you want to Print read: " index
-
-
-	    if [[ $index =~ [0-9]+$ ]]; then
-	    		if (($index>=${#Objects[@]} || $index < 0 )); then
-	    			
-	    			 echo Please Enter a Valid Index Number Within the Array
-	    		else
-	    		echo ${Objects[$index]}
-	    		break
-	    	fi
-	    else
-	    	{
-	    		echo Input a Valid Input
-	    	}
-	    fi
-		
-
-
-	done		
-}
-removeItem()
-{
-	while true; do
-		read -p "What Item do you want to remove (Type Index):" index
-
-		if [[ $index =~ [0-9]+$ ]]; then
-				if (($index>=${#Objects[@]} || $index < 0 )); then
-					
-					 echo Please Enter a Valid Index Number Within the Array
-				else
-				 echo  "${Objects[$index]} deleted"
-				  unset 'Objects[$index]'
-				  Objects=("${Objects[@]}")
-				 
-				
-				 echo "Showing List
-			     =====================
-				 "
-				 echo "${Objects[@]}"
-				 break
-				fi
-			else 
-				{
-					echo Enter a Valid Index
-				}
-			fi
-
-	
-done
-}
-printList()
-{
-	for item in "${!Objects[@]}";  do
- 		echo "$item) ${Objects[$item]}"
-	done
-}
-removeLast()
-{
-	echo ${Objects[-1]} deleted
-	unset 'Objects[-1]'
-	Objects=("${Objects[@]}")
-
-}
-addItem()
-{
-	read -p "Name of Item You want to add:" itemAdded
-	Objects+=("$itemAdded")
-	echo New Item Added
-}
-
-
-printMenu(){
 	echo "
 	Welcome User 
 	
 	Choose an Index from 1-6	
 	==========================
-	1) Print List
-	2) Print Object at Index 
-	3) Add item
-	4) Remove last item	
-	5) Remove item at Index
-	6) Save Current Array
-	7) Load an array
-	8) List saved arrays'
-	9) delete an array
-	10) quit
+ ||     1) Print List
+ ||	 2) Print Object at Index 
+ ||	 3) Add item
+ ||	 4) Remove last item	
+ ||	 5) Remove item at Index
+ ||	 6) Save Current Array
+ ||	 7) Load an array
+ ||	 8) List saved arrays
+ ||	 9) Delete an array
+ ||	10) Quit
 	"
-	read -p "Choice:" option
-	
 }
 
+# Gets user input and stores it in user_input
+get_user_input(){
+	read -p "Enter menu selection: " user_input
+}
 
-save_array()
+# Prints a specific index from the current array
+print_an_index_in_ccurrent_array()
 {
+	echo " What index do you want to print"
+	get_user_input
 	
-	read -p "Name of File: "  name
-    file="$datafolder/$name.txt"
+	if [[ $user_input =~ [0-9]+$  && $user_input -ge 0 && $user_input -le ${#Objects[@]}-1 ]]; then	
+		echo ${Objects[$user_input]}
+		
+	else {
+			echo Input a Valid Input
+			print_an_index_in_ccurrent_array
+		}
+	fi
+	menu_selection
+
+}
+
+# Removes an item from the array at a specific index
+remove_item_at_x_index()
+{
+	echo what Item do you want to remove
+	get_user_input
+	if [[ $user_input =~ [0-9]+$ && $user_input -le ${#Objects[@]} && $user_input -ge 0 ]]; then
+		echo  "${Objects[$user]} deleted"
+		unset 'Objects[$user_input]'
+		Objects=("${Objects[@]}")
+		echo "Showing List
+		=====================
+		"
+		echo "${Objects[@]}"
+    else
+	{
+		echo Input Valid index
+		remove_item_at_x_index
+	}
+	fi
+	menu_selection
+}
+
+# Prints all items in the array
+print_list()
+{
+	for item in "${!Objects[@]}";  do
+ 		echo "$item) ${Objects[$item]}"
+	done
+	menu_selection
+}
+
+# Removes the last item in the array
+remove_last_index()
+{
+	echo ${Objects[-1]} deleted
+	unset 'Objects[-1]'
+	Objects=("${Objects[@]}")
+	menu_selection
+}
+
+# Adds a new item to the array
+add_an_item_to_array()
+{
+	echo What item would you want to add
+	get_user_input
+	Objects+=("$itemAdded")
+	echo New Item Added
+	menu_selection
+}
+
+# Displays the main menu and handles user choices
+menu_selection(){
+   print_menu
+	
+	get_user_input
+	
+	case $user_input in 
+ 1) 
+ 	print_list 
+ 	;;
+ 2) 
+	print_an_index_in_ccurrent_array
+ 	;;
+ 3) add_an_item_to_array
+ 	;;
+ 4) remove_last_index
+ 	;;
+ 5) remove_item_at_x_index
+ 	;;
+ 6) save_current_array
+    ;;
+ 7) load_a_saved_array
+    ;;
+ 8) list_saved_arrays
+ 	;;
+ 9) delete_a_saved_array
+    ;;
+ 10) quit
+    break
+ 	;;
+    *) echo "Please Enter a Valid Number"
+	menu_selection
+	;;
+	else
+		echo "file doesnt exist(type exit to leave)"
+ esac
+}
+
+# Saves the current array to a text file
+save_current_array()
+{
+	echo What is the name of the file you want to save
+	get_user_input
+    file="$datafolder/$user_input.txt"
     printf "%s\n" "${Objects[@]}" > "$file"
-	echo $name created
+	echo $user_input created
+	ls "$datafolder" 
+	menu_selection
+}
+
+# Saves the array and exits the program
+save_and_leave()
+{
+	echo What is the name of the file you want to save
+	get_user_input
+    file="$datafolder/$user_input.txt"
+    printf "%s\n" "${Objects[@]}" > "$file"
+	echo $user_input created
 	ls "$datafolder" 
 }
+
+# Lists all saved arrays in the data folder
 list_saved_arrays()
 {
 	ls "$datafolder"
+	menu_selection
 }
 
+# Asks user to save before quitting
 quit()
- {
-	while true; do
-	 read -p "Would you like to save before leaving (y/n)" input
-	 if [[ $input == "y" || $input == "yes" ]]; then
-	   	save_array
-	   	exit 0
-	 elif [[ $input == "n" || $input == "no" ]]; then
-	
-	 	exit 0
-	 else
-	  echo "Input only accepts yes/no/y/n"
-	 fi
-	done
-
-
-   echo Bye
-   
- }
-
-delete_array()
 {
-	while true; do
-	  if [[ $input == "exit" ]]; then
-	  break
-	 fi
-		read -p "Which file do you want to delete" $input
-		if [ -f "$datafolder/$input.txt" ]; then
-			rm -r $datafolder/$input.txt
-			echo $input.txt deleted
-		else
-		 echo "file doesnt exist(type exit to leave)"
-		fi
-	done
-
-
+	echo Do you want to save before you quit
+	get_user_input
+	case $user_input in
+	  y) 
+	   save_and_leave
+	  ;;
+	  yes) save_and_leave
+	  ;;
+	  no) clear
+	   exit 0
+	  ;;
+	  n) clear
+	   exit 0
+	  ;;
+	  *) echo Input Only accepts y/n/yes/no
+	  quit
+	esac
 }
+
+# Deletes a saved array from the data folder
+delete_a_saved_array()
+{
+	echo Type name of file you want to delete, type exit to leave
+	get_user_input
+	if [[ $user_input == "exit" ]]; then
+		menu_selection
+	fi
+	
+	if [ -f "$datafolder/$user_input.txt" ]; then
+		rm -r $datafolder/"$user_input".txt
+		echo $user_input.txt deleted
+	else
+		echo "file doesnt exist(type exit to leave)"
+	fi
+	menu_selection
+}
+
+# Loads a saved array from file
 load_a_saved_array()
 {
-  while true; do
-   read -p "What is the name of the File
-   (type exit  to leave) : " name_of_array
+	echo " Input  name of text , type exit to leave"
+	get_user_input
 
-    if [[ $name_of_array == "exit" ]]; then
-	 break
+	if [[ $user_input == "exit" ]]; then
+		menu_selection
 	fi
 
-	if [ -f "/home/bignasx/Bashing_Boxes/data/$name_of_array.txt" ]; then
-		mapfile -t loaded_array < "/home/bignasx/Bashing_Boxes/data/$name_of_array.txt"
-	 Objects=("${loaded_array[@]}")
+	if [ -f "/home/bignasx/Bashing_Boxes/data/$user_input.txt" ]; then
+		mapfile -t loaded_array < "/home/bignasx/Bashing_Boxes/data/$user_input.txt"
+		Objects=("${loaded_array[@]}")
 
-	 for item in "${!Objects[@]}";  do
- 		echo "$item) ${Objects[$item]}"
-		
-	 
-	 done
-	 break
-	 
+		for item in "${!Objects[@]}";  do
+			echo "$item) ${Objects[$item]}"
+		done
+		menu_selection
 	else
-	 echo That file $name_of_array doesnt exist
+		echo That file $user_input doesnt exist
+		load_a_saved_array
 	fi
-
-	
-	  
- done
-   
-	
-	
 }
-while true; do
-	printMenu
 
-	if [[ $option =~ [0-9]+$ ]]; then
-		case $option in 
-	 1) 
-	 	printList 
-	 	;;
-	 2) printIndex
-	 	;;
-	 3) addItem
-	 	;;
-	 4) removeLast
-	 	;;
-	 5) removeItem
-	 	;;
-	 6) save_array
-	    ;;
-	 7) load_a_saved_array
-	    ;;
-	 8) list_saved_arrays
-	 	;;
-	 9) delete_array
-	    ;;
-	    
-	 10) quit
-	    break
-	 	;;
-
-	    *) echo "Please Enter a Valid Number";;
-	 esac
-	else
-		{
-			echo Input a Valid Index
-		}
-	fi	 
-done
+# Starts the program by showing the menu
+menu_selection
