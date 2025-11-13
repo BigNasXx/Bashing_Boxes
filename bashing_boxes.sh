@@ -3,6 +3,11 @@ clear
 Objects=("Staircase" "Sail Boat" "Microscope"  "Marshmallows" "Lemonade" "Cauliflower" "Honey" "Walkman" "Milkshake" "Orange tree")
 
 datafolder="/home/bignasx/Bashing_Boxes/data" 
+array_storage="/home/bignasx/Bashing_Boxes/data/array_storage" 
+maxnum="30"
+
+
+
 
 # prints the menu
 print_menu()
@@ -125,14 +130,16 @@ menu_selection(){
  	;;
  9) delete_a_saved_array
     ;;
- 10) quit
+ 10)generate_random_box
+    ;;
+    
+ 11) quit
     break
  	;;
     *) echo "Please Enter a Valid Number"
 	menu_selection
 	;;
-	else
-		echo "file doesnt exist(type exit to leave)"
+	
  esac
 }
 
@@ -141,10 +148,10 @@ save_current_array()
 {
 	echo What is the name of the file you want to save
 	get_user_input
-    file="$datafolder/$user_input.txt"
+    file="$array_storage/$user_input.txt"
     printf "%s\n" "${Objects[@]}" > "$file"
 	echo $user_input created
-	ls "$datafolder" 
+	ls "$array_storage" 
 	menu_selection
 }
 
@@ -153,16 +160,16 @@ save_and_leave()
 {
 	echo What is the name of the file you want to save
 	get_user_input
-    file="$datafolder/$user_input.txt"
+    file="$array_storage/$user_input.txt"
     printf "%s\n" "${Objects[@]}" > "$file"
 	echo $user_input created
-	ls "$datafolder" 
+	ls "$array_storage" 
 }
 
 # Lists all saved arrays in the data folder
 list_saved_arrays()
 {
-	ls "$datafolder"
+	ls "$array_storage"
 	menu_selection
 }
 
@@ -197,8 +204,8 @@ delete_a_saved_array()
 		menu_selection
 	fi
 	
-	if [ -f "$datafolder/$user_input.txt" ]; then
-		rm -r $datafolder/"$user_input".txt
+	if [ -f "$array_storage/$user_input.txt" ]; then
+		rm -r $array_storage/"$user_input".txt
 		echo $user_input.txt deleted
 	else
 		echo "file doesnt exist(type exit to leave)"
@@ -208,7 +215,7 @@ delete_a_saved_array()
 
 # Loads a saved array from file
 load_a_saved_array()
-{
+{ 
 	echo " Input  name of text , type exit to leave"
 	get_user_input
 
@@ -216,8 +223,8 @@ load_a_saved_array()
 		menu_selection
 	fi
 
-	if [ -f "/home/bignasx/Bashing_Boxes/data/$user_input.txt" ]; then
-		mapfile -t loaded_array < "/home/bignasx/Bashing_Boxes/data/$user_input.txt"
+	if [ -f "$array_storage/$user_input.txt" ]; then
+		mapfile -t loaded_array < "$array_storage/$user_input.txt"
 		Objects=("${loaded_array[@]}")
 
 		for item in "${!Objects[@]}";  do
@@ -228,6 +235,38 @@ load_a_saved_array()
 		echo That file $user_input doesnt exist
 		load_a_saved_array
 	fi
+}
+get_prompt_size()
+{ 
+	read -p "Enter a Number between 1-30 for the array: " box_size
+	if [[ $box_size -ge 0 &&  $box_size -le $maxnum && $box_size =~ [0-9]+$ ]]; then
+		return 0
+		
+	else
+	 echo Invalid Input
+	 generate_random_box
+	fi
+
+}
+load_object_pool()
+{
+	shuf -n $box_size "$datafolder/warehouse_of_objects.txt" > "$datafolder/random_file.txt"
+}
+
+
+generate_random_box()
+{
+
+ get_prompt_size
+ load_object_pool
+
+	
+ mapfile -t loaded_array < "$datafolder/random_file.txt"
+ Objects=("${loaded_array[@]}")
+ for item in "${!Objects[@]}";  do
+ 		echo "$item) ${Objects[$item]}"
+ done
+ menu_selection
 }
 
 # Starts the program by showing the menu

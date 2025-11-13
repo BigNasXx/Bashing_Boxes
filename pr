@@ -1,0 +1,8 @@
+#!/bin/bash
+clear
+generate_random_box()
+{
+	
+}
+shuf -n 10 "/home/bignasx/Bashing_Boxes/data/warehouse_of_objects.txt" > random_file.txt
+
